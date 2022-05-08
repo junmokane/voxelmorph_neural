@@ -14,4 +14,4 @@ We have a data with size (t, h, w) = (60, 512, 512), where t, h, w is time, heig
 |VoxelMorph|1.2246e-3|1.9343e-3|2.2554e-3|
 |Without Training|4.5476e-3|6.5298e-3|7.1357e-3|
 
-## Result sample
+## Sample result of VoxelMorph
