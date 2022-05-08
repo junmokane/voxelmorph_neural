@@ -15,3 +15,12 @@ We have a data with size (t, h, w) = (60, 512, 512), where t, h, w is time, heig
 |Without Training|4.5476e-3|6.5298e-3|7.1357e-3|
 
 ## Sample result of VoxelMorph
+
+(tr, ro) = (12, 8)
+
+https://user-images.githubusercontent.com/31270778/167304453-1d9e2f13-8d95-48ff-8719-1bfa9d0b5ee6.mp4
+
+(tr, ro) = (18, 12)
+
+https://user-images.githubusercontent.com/31270778/167304393-bf0c1ca9-aae4-414c-a2a9-e8fcebadb9b5.mp4
+
