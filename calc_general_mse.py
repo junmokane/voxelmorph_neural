@@ -12,6 +12,42 @@ REALS deformation flow -> flow_reals
 Composed flow -> flow_syn + flow_reals
 '''
 
+def get_default_grid(Y_reshape):
+    # Generate default grid (grid that does identity transformation)
+    size = [512, 512]
+    vectors = [torch.arange(0, s) for s in size]
+    grids = torch.meshgrid(vectors)
+    default_grid = torch.stack(grids)
+    default_grid = torch.unsqueeze(default_grid, 0)
+    default_grid = default_grid.type(torch.FloatTensor)
+    for i in range(len(size)):
+        default_grid[:, i, ...] = 2 * (default_grid[:, i, ...] / (size[i] - 1) - 0.5)
+    default_grid = default_grid.permute(0, 3, 2, 1)  # 1,h,w,2 (w,h are flipped!)
+    default_grid = default_grid.repeat_interleave(Y_reshape.size(0), dim=0) # t,h,w,2
+    return default_grid
+
+def calculate_mse(Y_reshape, flow_syn, flow_train):
+    '''
+    Y_reshape: t,1,h,w
+    flow_syn: t,h,w,2
+    flow_train: t,h,w,2
+    '''
+    default_grid = get_default_grid(Y_reshape)
+        
+    # Composition of two deformation flows
+    flow_compose = flow_syn + flow_train  # t,h,w,2
+    grid_compose = default_grid + flow_compose
+    grid_mu = grid_compose.mean(dim=0, keepdim=True).repeat_interleave(Y_reshape.size(0), dim=0)
+
+    # Calculate mse loss
+    Y_tau = F.grid_sample(Y_reshape, grid_compose, align_corners=True)  # 60x1x512x512
+    Y_mu = F.grid_sample(Y_reshape, grid_mu, align_corners=True)  # 60x1x512x512
+    mse = torch.mean((Y_tau - Y_mu) ** 2)
+    return mse
+
+'''
+# Calculate mse example code
+
 # read data
 Y = torch.from_numpy(io.imread(f'./zebrafish/Y.tif').astype(float)).float()  # 60,512,512
 Y /= Y.max()
@@ -53,3 +89,4 @@ Y_tau = F.grid_sample(Y_reshape, grid_compose, align_corners=True)  # 60x1x512x5
 Y_mu = F.grid_sample(Y_reshape, grid_mu, align_corners=True)  # 60x1x512x512
 mse = torch.mean((Y_tau - Y_mu) ** 2)
 print(f'mse is {mse}')  # this is definitely zero!
+'''

@@ -1,6 +1,10 @@
 import torch
 import torch.nn.functional as F
 
+'''
+This code is tutorial that how flow works in spatial transformation.
+Note that grid is used when applying grid_sample function.
+'''
 
 Y = torch.zeros((60, 512, 512))
 t, w, h = Y.size()
